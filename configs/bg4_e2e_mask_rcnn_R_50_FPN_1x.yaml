@@ -41,3 +41,4 @@ SOLVER:
 INPUT:
   PIXEL_MEAN: [152., 152., 152.]
 OUTPUT_DIR: /models/bg4_benchmark  
+PATHS_CATALOG: /datasets/bg-parcel-set4/paths_catalog.py
