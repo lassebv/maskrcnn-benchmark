@@ -105,7 +105,16 @@ def prepare_for_coco_segmentation(predictions, dataset):
     masker = Masker(threshold=0.5, padding=1)
     # assert isinstance(dataset, COCODataset)
     coco_results = []
-    running_idx = 0
+    
+    class RunningIdx(object):
+        def __init__(self):
+            self.running_idx = 0
+        def get_next(self):
+            self.running_idx += 1
+            return self.running_idx
+        
+    running_idx = RunningIdx()
+    
     for image_id, prediction in tqdm(enumerate(predictions)):
         original_id = dataset.id_to_img_map[image_id]
         if len(prediction) == 0:
@@ -142,7 +151,7 @@ def prepare_for_coco_segmentation(predictions, dataset):
         coco_results.extend(
             [
                 {
-                    "id": running_idx,
+                    "id": running_idx.get_next(),
                     "image_id": original_id,
                     "category_id": mapped_labels[k],
                     "segmentation": rle,
@@ -151,7 +160,6 @@ def prepare_for_coco_segmentation(predictions, dataset):
                 for k, rle in enumerate(rles)
             ]
         )
-        running_idx += 1
     return coco_results
 
 
