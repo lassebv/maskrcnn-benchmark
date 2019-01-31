@@ -1,4 +1,4 @@
-ARG CUDA="9.0"
+ARG CUDA="10.0"
 ARG CUDNN="7"
 
 FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu16.04
@@ -54,9 +54,12 @@ RUN git clone https://github.com/cocodataset/cocoapi.git \
  && python setup.py build_ext install
 
 # install PyTorch Detection
-RUN git clone https://github.com/facebookresearch/maskrcnn-benchmark.git \
+
+RUN git clone https://github.com/lassebv/maskrcnn-benchmark.git \
  && cd maskrcnn-benchmark \
- && python setup.py build develop
+ && sed -i -e 's/torch.cuda.is_available()/True/g' setup.py \
+ && python setup.py build develop \
+ && sed -i -e 's/True/torch.cuda.is_available()/g' setup.py
 
 RUN jupyter notebook --generate-config
 
