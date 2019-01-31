@@ -156,6 +156,7 @@ def prepare_for_coco_segmentation(predictions, dataset):
                     "category_id": mapped_labels[k],
                     "segmentation": rle,
                     "score": scores[k],
+                    "iscrowd": 0
                 }
                 for k, rle in enumerate(rles)
             ]
