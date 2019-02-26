@@ -53,6 +53,7 @@ class Checkpointer(object):
         if self.has_checkpoint():
             # override argument with existing checkpoint
             f = self.get_checkpoint_file()
+            print('Loading file ', f)
         if not f:
             # no checkpoint could be found
             self.logger.info("No checkpoint found. Initializing model from scratch")
