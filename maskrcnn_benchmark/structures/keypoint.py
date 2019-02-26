@@ -93,6 +93,28 @@ def _create_flip_indices(names, flip_map):
     flip_indices = [names.index(i) for i in flipped_names]
     return torch.tensor(flip_indices)
 
+class SurfaceKeypoints(Keypoints):
+    NAMES = [
+            'center',
+            'ul', 
+            'ur',
+            'll',
+            'lr']
+    FLIP_MAP = {
+            'ul': 'ur',
+            'll': 'lr'
+            }
+
+SurfaceKeypoints.FLIP_INDS = _create_flip_indices(SurfaceKeypoints.NAMES, SurfaceKeypoints.FLIP_MAP)
+def kp_connections_box(keypoints):
+    kp_lines = [
+        [keypoints.index('center'), keypoints.index('ul')],
+        [keypoints.index('center'), keypoints.index('ur')],
+        [keypoints.index('center'), keypoints.index('ll')],
+        [keypoints.index('center'), keypoints.index('lr')],
+    ]
+    return kp_lines
+SurfaceKeypoints.CONNECTIONS = kp_connections_box(SurfaceKeypoints.NAMES)
 
 class PersonKeypoints(Keypoints):
     NAMES = [
