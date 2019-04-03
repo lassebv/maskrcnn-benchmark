@@ -84,7 +84,8 @@ class Normalize(object):
         self.to_bgr255 = to_bgr255
 
     def __call__(self, image, target):
-        if self.to_bgr255:
-            image = image[[2, 1, 0]] * 255
+        #if self.to_bgr255:
+        #    image = image[[2, 1, 0]] * 255
+        image = image.repeat((3,1,1))
         image = F.normalize(image, mean=self.mean, std=self.std)
         return image, target
