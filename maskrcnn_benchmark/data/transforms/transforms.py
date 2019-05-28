@@ -54,9 +54,11 @@ class Resize(object):
 
         return (oh, ow)
 
-    def __call__(self, image, target):
+    def __call__(self, image, target=None):
         size = self.get_size(image.size)
         image = F.resize(image, size)
+        if target is None:
+            return image
         target = target.resize(image.size)
         return image, target
 
@@ -69,6 +71,24 @@ class RandomHorizontalFlip(object):
         if random.random() < self.prob:
             image = F.hflip(image)
             target = target.transpose(0)
+        return image, target
+
+
+class ColorJitter(object):
+    def __init__(self,
+                 brightness=None,
+                 contrast=None,
+                 saturation=None,
+                 hue=None,
+                 ):
+        self.color_jitter = torchvision.transforms.ColorJitter(
+            brightness=brightness,
+            contrast=contrast,
+            saturation=saturation,
+            hue=hue,)
+
+    def __call__(self, image, target):
+        image = self.color_jitter(image)
         return image, target
 
 
@@ -88,4 +108,6 @@ class Normalize(object):
         #    image = image[[2, 1, 0]] * 255
         image = image.repeat((3,1,1))
         image = F.normalize(image, mean=self.mean, std=self.std)
+        if target is None:
+            return image
         return image, target
