@@ -28,11 +28,14 @@ ENV PATH=$CONDA_PREFIX/bin:$PATH
 ENV CONDA_AUTO_UPDATE_CONDA=false
 
 RUN conda install -y ipython
-RUN pip install requests ninja yacs cython matplotlib jupyter
+RUN pip install requests ninja yacs cython matplotlib jupyter tqdm
 
-# Install PyTorch 1.0 Nightly and OpenCV
-RUN conda install -y pytorch-nightly -c pytorch \
- && conda install -y opencv -c menpo \
+# Install PyTorch Nightly
+ARG CUDA
+RUN conda install -y pytorch-nightly cudatoolkit=${CUDA} -c pytorch
+
+# Install OpenCV
+RUN conda install -y opencv -c menpo \
  && conda clean -ya
 
 WORKDIR /root
@@ -53,8 +56,14 @@ RUN git clone https://github.com/cocodataset/cocoapi.git \
  && cd cocoapi/PythonAPI \
  && python setup.py build_ext install
 
-# install PyTorch Detection
+# install apex
+RUN git clone https://github.com/NVIDIA/apex.git \
+ && cd apex \
+ && python setup.py install --cuda_ext --cpp_ext
 
+# install PyTorch Detection
+ARG FORCE_CUDA="1"
+ENV FORCE_CUDA=${FORCE_CUDA}
 RUN git clone https://github.com/lassebv/maskrcnn-benchmark.git \
  && cd maskrcnn-benchmark \
  && sed -i -e 's/torch.cuda.is_available()/True/g' setup.py \
